@@ -2135,6 +2135,12 @@ function collectFormData(){
   document.querySelectorAll('[data-path]').forEach(el=>setQPath(el));
 }
 
+function updateRepNames(val){
+  document.querySelectorAll('.rep-name-field').forEach(function(el){
+    el.textContent = val || '';
+  });
+}
+
 function attachEvents(){
   // Nothing extra needed — all handled via inline handlers
 }
@@ -2198,7 +2204,7 @@ function buildContract(){
           style="flex:1;font-size:.87rem"
           placeholder="Enter representative name…"
           value="${esc(co.representative||'')}"
-          oninput="S.co.representative=this.value;document.querySelectorAll('.rep-name-field').forEach(el=>el.textContent=this.value)"
+          oninput="S.co.representative=this.value;updateRepNames(this.value)"
         >
       </div>
       <div style="font-size:.72rem;color:var(--ink3)">Updates in real time throughout the contract</div>
@@ -2220,7 +2226,7 @@ function buildContract(){
         <div class="ct-parties">
           <div class="ct-p">En Miami, Florida, a los <strong>${todayES}</strong>, entre:</div>
           <div class="ct-p"><strong>CLIENTE:</strong> ${esc(clientName)}, con domicilio en ${esc(clientAddr)} — "EL CLIENTE"</div>
-          <div class="ct-p"><strong>GESTOR:</strong> ${esc(co.legalName||"ROOFTOP BY SKYMOON LLC")}, operando bajo la marca <strong>${esc(co.name)} ${esc(co.tagline)}</strong>, ${esc(co.address+", "+co.city+", "+co.state+" "+co.zip)}, representado por <strong>${esc(co.representative||"Oscar Silvestre Jurado Echeverría")}</strong> — "EL GESTOR"</div>
+          <div class="ct-p"><strong>GESTOR:</strong> ${esc(co.legalName||"ROOFTOP BY SKYMOON LLC")}, operando bajo la marca <strong>${esc(co.name)} ${esc(co.tagline)}</strong>, ${esc(co.address+", "+co.city+", "+co.state+" "+co.zip)}, representado por <strong class="rep-name-field">${esc(co.representative||'')}</strong> — "EL GESTOR"</div>
         </div>
 
         <!-- DISCLOSURE -->
@@ -2369,7 +2375,7 @@ function buildContract(){
           </div>
           <div class="ct-sig-blk">
             <div class="ct-sig-line">Firma del Gestor</div>
-            <div class="ct-sig-name" style="margin-top:4px">${esc(co.representative||'Oscar Silvestre Jurado Echeverría')}</div>
+            <div class="ct-sig-name rep-name-field" style="margin-top:4px">${esc(co.representative||'')}</div>
             <div style="font-size:.72rem;color:#9ca3af">${esc(co.legalName||"ROOFTOP BY SKYMOON LLC")}</div>
             <div>Fecha: _________________________</div>
           </div>
@@ -2388,7 +2394,7 @@ function buildContract(){
         <div class="ct-parties">
           <div class="ct-p">In Miami, Florida, on <strong>${today}</strong>, between:</div>
           <div class="ct-p"><strong>CLIENT:</strong> ${esc(clientName)}, at ${esc(clientAddr)} — the "CLIENT"</div>
-          <div class="ct-p"><strong>MANAGER:</strong> ${esc(co.legalName||"ROOFTOP BY SKYMOON LLC")}, operating as <strong>${esc(co.name)} ${esc(co.tagline)}</strong>, ${esc(co.address+", "+co.city+", "+co.state+" "+co.zip)}, represented by <strong>${esc(co.representative||"Oscar Silvestre Jurado Echeverría")}</strong> — the "MANAGER"</div>
+          <div class="ct-p"><strong>MANAGER:</strong> ${esc(co.legalName||"ROOFTOP BY SKYMOON LLC")}, operating as <strong>${esc(co.name)} ${esc(co.tagline)}</strong>, ${esc(co.address+", "+co.city+", "+co.state+" "+co.zip)}, represented by <strong class="rep-name-field">${esc(co.representative||'')}</strong> — the "MANAGER"</div>
         </div>
 
         <div class="ct-warn"><strong>DISCLOSURE</strong>
@@ -2523,7 +2529,7 @@ function buildContract(){
           </div>
           <div class="ct-sig-blk">
             <div class="ct-sig-line">Manager Signature</div>
-            <div class="ct-sig-name" style="margin-top:4px">${esc(co.representative||"Oscar Silvestre Jurado Echeverría")}</div>
+            <div class="ct-sig-name rep-name-field" style="margin-top:4px">${esc(co.representative||'')}</div>
             <div style="font-size:.72rem;color:#9ca3af">${esc(co.legalName||"ROOFTOP BY SKYMOON LLC")}</div>
             <div>Date: _________________________</div>
           </div>
@@ -2542,7 +2548,7 @@ function buildTPA(){
   const today = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
   const todayES = new Date().toLocaleDateString('es-US',{year:'numeric',month:'long',day:'numeric'});
   const legalName = co.legalName||'ROOFTOP BY SKYMOON LLC';
-  const rep = q.tpaRep||co.representative||'Oscar Silvestre Jurado Echeverría';
+  const rep = q.tpaRep||co.representative||'';
   const tpaNum = q.number.replace('EST','TPA');
 
   return `<div class="contract-wrap">
@@ -2556,9 +2562,9 @@ function buildTPA(){
           id="tpa-rep-input"
           class="fi"
           style="flex:1;font-size:.87rem"
-          placeholder="${esc(co.representative||'Oscar Silvestre Jurado Echeverría')}"
+          placeholder="${esc(co.representative||'')}"
           value="${esc(q.tpaRep||'')}"
-          oninput="S.q.tpaRep=this.value;document.querySelectorAll('.tpa-rep-name').forEach(el=>el.textContent=this.value||S.co.representative||'Oscar Silvestre Jurado Echeverría')"
+          oninput="S.q.tpaRep=this.value;document.querySelectorAll('.tpa-rep-name').forEach(el=>el.textContent=this.value||S.co.representative||'')"
         >
       </div>
       <div style="font-size:.72rem;color:var(--ink3)">Edita quién firma como Tercero Autorizado — se actualiza en tiempo real en el documento</div>
@@ -2584,108 +2590,7 @@ function buildTPA(){
       <div class="ct-bar"></div>
 
       <!-- LANG HEADER ES -->
-      <div class="ct-lang-hd">
-        <span class="ct-lang-pill ct-lang-es">🇪🇸 ESPAÑOL</span>
-        <span style="font-size:.7rem;color:var(--ink3)">Autorización a Terceros · Miami-Dade County &amp; Instituciones relacionadas</span>
-      </div>
-
-      <div class="tpa-body">
-        <div class="tpa-title">AUTORIZACIÓN A TERCERO REPRESENTANTE</div>
-        <div class="tpa-sub">Third Party Authorization &amp; Owner Representative Designation</div>
-
-        <div class="ct-parties" style="margin-bottom:1.25rem">
-          <div class="ct-p">En la ciudad de <strong>Miami, Florida</strong>, a los <strong>${todayES}</strong>.</div>
-          <div class="ct-p"><strong>PROPIETARIO / AUTORIZANTE:</strong> <strong>${esc(clientName)}</strong>, en su calidad de propietario del inmueble indicado a continuación.</div>
-          <div class="ct-p"><strong>TERCERO AUTORIZADO:</strong> <strong class="tpa-rep-name">${esc(rep)}</strong>, en representación de <strong>${esc(legalName)}</strong> — marca comercial <strong>${esc(co.name)} ${esc(co.tagline)}</strong>.</div>
-        </div>
-
-        <div class="tpa-field">
-          <span class="tpa-field-lbl">Dirección del Inmueble / Property Address</span>
-          <div class="tpa-field-val"><strong>${esc(propAddr)}</strong></div>
-        </div>
-
-        <div class="tpa-field">
-          <span class="tpa-field-lbl">Entidades / Agencies Autorizadas</span>
-          <div class="tpa-field-val">
-            Miami-Dade County Building Department · Clerk of Courts<br>
-            Miami-Dade County Property Appraiser · Tax Collector<br>
-            City of Miami / Miami Shores Building &amp; Zoning Departments<br>
-            Florida Department of Business &amp; Professional Regulation (DBPR)<br>
-            Any other county, municipal, or state agency related to the Property
-          </div>
-        </div>
-
-        <div class="tpa-field">
-          <span class="tpa-field-lbl">Tercero Autorizado / Authorized Third Party</span>
-          <div class="tpa-field-val">
-            <strong class="tpa-rep-name">${esc(rep)}</strong><br>
-            ${esc(co.phone)} · ${esc(co.email)}<br>
-            <strong>${esc(legalName)}</strong> · ${esc(co.address)}, ${esc(co.city)}, ${esc(co.state)} ${esc(co.zip)}
-          </div>
-        </div>
-
-        <div class="tpa-warn">
-          <strong>DISCLOSURE</strong>
-          Esta autorización faculta al Tercero Autorizado para actuar como representante del Propietario ante organismos públicos y privados relacionados con la Propiedad. Esta autorización NO transfiere ni cede la titularidad del inmueble, ni otorga poderes notariales generales. El Tercero Autorizado actuará siempre en nombre e interés del Propietario, sin asumir responsabilidades financieras ni legales propias de la propiedad.
-        </div>
-
-        <div class="tpa-body-txt">
-          Yo, <strong>${esc(clientName)}</strong>, en mi calidad de propietario legítimo del inmueble ubicado en <strong>${esc(propAddr)}</strong>, por medio del presente documento autorizo expresamente a <strong class="tpa-rep-name">${esc(rep)}</strong>, actuando en representación de <strong>${esc(legalName)}</strong>, para que en mi nombre y representación pueda realizar las siguientes gestiones ante las entidades indicadas:
-        </div>
-
-        ${[
-          'Presentar, gestionar y obtener permisos de construcción, remodelación, demolición y cualquier permiso relacionado con el inmueble.',
-          'Firmar y presentar solicitudes, planos, formularios, declaraciones y cualquier documentación requerida por el Condado de Miami-Dade, la ciudad o el Estado de Florida.',
-          'Representar al Propietario en trámites de zonificación (zoning), variaciones (variances), certificados de ocupación (Certificate of Occupancy), y cumplimiento de códigos de construcción.',
-          'Gestionar inscripciones, registros, modificaciones, validaciones, certificaciones y cualquier otro trámite relacionado con la Propiedad ante las entidades mencionadas.',
-          'Recibir notificaciones, resoluciones, aprobaciones o denegaciones en nombre del Propietario, con obligación de informarle de manera inmediata.',
-          'Coordinar inspecciones de obra, trámites posteriores a la emisión del permiso y gestiones necesarias para la finalización exitosa del proyecto.',
-          'Contratar, en nombre del Propietario y con su aprobación, los servicios de arquitectos, ingenieros, contratistas generales y cualquier otro profesional necesario para el proyecto.'
-        ].map((s,i)=>`<div class="ct-cl" data-n="${i+1}" style="font-size:.83rem">${s}</div>`).join('')}
-
-        <div class="tpa-body-txt" style="margin-top:1rem">
-          El Tercero Autorizado queda expresamente <strong>excluido</strong> de: (i) vender, hipotecar, gravar o disponer del inmueble; (ii) contraer deudas o créditos a nombre del Propietario; (iii) modificar documentos de titularidad; (iv) actuar más allá del alcance de gestión y representación ante entidades públicas y privadas relacionadas con el proyecto de remodelación descrito en el Contrato de Servicios N.° <strong>${esc(q.number.replace('EST','CONT'))}</strong>.
-        </div>
-
-        <div class="tpa-body-txt">
-          Esta autorización permanecerá vigente hasta: (i) la finalización exitosa del proyecto de remodelación, (ii) la revocación expresa por escrito por parte del Propietario notificada al Tercero Autorizado con al menos <strong>15 días hábiles</strong> de anticipación, o (iii) la resolución del Contrato de Servicios entre las Partes.
-        </div>
-
-        <div class="tpa-sig">
-          <div class="tpa-sig-blk">
-            <div class="tpa-sig-line">Firma del Propietario / Owner Signature</div>
-            <div class="tpa-sig-name" style="margin-top:4px">${esc(clientName)}</div>
-            <div>Fecha / Date: _________________________</div>
-            <div style="margin-top:.5rem;font-size:.72rem;color:#9ca3af">Nombre impreso / Printed name: ________________</div>
-          </div>
-          <div class="tpa-sig-blk">
-            <div class="tpa-sig-line">Tercero Autorizado / Authorized Representative</div>
-            <div class="tpa-sig-name tpa-rep-name" style="margin-top:4px">${esc(rep)}</div>
-            <div>${esc(legalName)}</div>
-            <div>Fecha / Date: _________________________</div>
-          </div>
-        </div>
-
-        <div class="tpa-notary">
-          <span class="tpa-notary-t">Notarización / Notary Block (si aplica)</span>
-          State of Florida, County of Miami-Dade<br>
-          The foregoing instrument was acknowledged before me this ______ day of ______________, 20___, by <strong>${esc(clientName)}</strong>, who is personally known to me or has produced _________________________ as identification.<br><br>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:.5rem">
-            <div>
-              <div style="border-top:1px solid #D2CEC4;padding-top:4px;font-size:.69rem;color:#9ca3af">Notary Public Signature</div>
-            </div>
-            <div>
-              <div style="border-top:1px solid #D2CEC4;padding-top:4px;font-size:.69rem;color:#9ca3af">Commission Number / Expiration</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- LANG HEADER EN -->
-      <div class="ct-lang-hd" style="margin-top:0">
-        <span class="ct-lang-pill ct-lang-en">🇺🇸 ENGLISH</span>
-        <span style="font-size:.7rem;color:var(--ink3)">Third Party Authorization · Owner Representative Designation</span>
-      </div>
+      
 
       <div class="tpa-body">
         <div class="tpa-title">THIRD PARTY AUTHORIZATION &amp; OWNER REPRESENTATIVE DESIGNATION</div>
